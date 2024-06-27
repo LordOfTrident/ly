@@ -2,6 +2,7 @@ const std = @import("std");
 const Allocator = std.mem.Allocator;
 const Random = std.rand.Random;
 const TerminalBuffer = @import("../tui/TerminalBuffer.zig");
+const Config = @import("../config/Config.zig");
 
 const interop = @import("../interop.zig");
 const termbox = interop.termbox;
@@ -66,7 +67,7 @@ pub fn realloc(self: *Matrix) !void {
     self.lines = lines;
 }
 
-pub fn draw(self: *Matrix) void {
+pub fn draw(self: *Matrix, config: Config) void {
     const buf_height = self.terminal_buffer.height;
     const buf_width = self.terminal_buffer.width;
     self.count += 1;
@@ -145,14 +146,17 @@ pub fn draw(self: *Matrix) void {
         var y: u64 = 1;
         while (y <= self.terminal_buffer.height) : (y += 1) {
             const dot = self.dots[buf_width * y + x];
-            var fg: u32 = @intCast(termbox.TB_GREEN);
+            //var fg: u32 = @intCast(termbox.TB_YELLOW);
+            var fg: u32 = @intCast(config.matrix_fg);
 
             if (dot.value == -1 or dot.value == ' ') {
                 termbox.tb_change_cell(@intCast(x), @intCast(y - 1), ' ', fg, termbox.TB_DEFAULT);
                 continue;
             }
 
-            if (dot.is_head) fg = @intCast(termbox.TB_WHITE | termbox.TB_BOLD);
+            //if (dot.is_head) fg = @intCast(termbox.TB_WHITE | termbox.TB_BOLD);
+            //if (dot.is_head) fg = @intCast(config.matrix_head_fg | termbox.TB_BOLD);
+            if (dot.is_head) fg = @intCast(config.matrix_head_fg);
             termbox.tb_change_cell(@intCast(x), @intCast(y - 1), @intCast(dot.value), fg, termbox.TB_DEFAULT);
         }
     }

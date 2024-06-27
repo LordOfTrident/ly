@@ -4,6 +4,8 @@
 
 Ly is a lightweight TUI (ncurses-like) display manager for Linux and BSD.
 
+This fork adds more configuration options to `config.ini`.
+
 ## Dependencies
 - Compile-time:
   - zig 0.12.0
@@ -132,7 +134,7 @@ then you have to disable getty, so it doesn't respawn on top of ly
 # ln -s /etc/sv/ly /var/service/
 ```
 
-By default, ly will run on tty2. To change the tty it must be set in `/etc/ly/config.ini` 
+By default, ly will run on tty2. To change the tty it must be set in `/etc/ly/config.ini`
 
 You should as well disable your existing display manager service if needed, e.g.:
 

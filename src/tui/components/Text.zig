@@ -81,19 +81,26 @@ pub fn handle(self: *Text, maybe_event: ?*termbox.tb_event, insert_mode: bool) !
     termbox.tb_set_cursor(@intCast(self.x + (self.cursor - self.visible_start)), @intCast(self.y));
 }
 
-pub fn draw(self: Text) void {
+pub fn draw(self: Text, color: u8) void {
     const length = @min(self.text.items.len, self.visible_length);
     if (length == 0) return;
 
     const visible_slice = if (self.text.items.len > self.visible_length and self.cursor < self.text.items.len) self.text.items[self.visible_start..(self.visible_length + self.visible_start)] else self.text.items[self.visible_start..];
+
+	const tmp = self.buffer.fg;
+	self.buffer.fg = color;
     self.buffer.drawLabel(visible_slice, self.x, self.y);
+    self.buffer.fg = tmp;
 }
 
-pub fn drawMasked(self: Text, mask: u8) void {
+pub fn drawMasked(self: Text, color: u8, mask: u8) void {
     const length = @min(self.text.items.len, self.visible_length - 1);
     if (length == 0) return;
 
+	const tmp = self.buffer.fg;
+	self.buffer.fg = color;
     self.buffer.drawCharMultiple(mask, self.x, self.y, length);
+    self.buffer.fg = tmp;
 }
 
 pub fn clear(self: *Text) void {

@@ -320,21 +320,22 @@ pub fn main() !void {
                 switch (config.animation) {
                     .none => {},
                     .doom => doom.draw(),
-                    .matrix => matrix.draw(),
+                    .matrix => matrix.draw(config),
                 }
 
                 if (config.bigclock and buffer.box_height + (bigclock.HEIGHT + 2) * 2 < buffer.height) draw_big_clock: {
-                    const format = "%H:%M";
+                    const format = config.bigclock_fmt;
                     const xo = buffer.width / 2 - (format.len * (bigclock.WIDTH + 1)) / 2;
                     const yo = (buffer.height - buffer.box_height) / 2 - bigclock.HEIGHT - 2;
 
-                    var clock_buf: [format.len + 1:0]u8 = undefined;
+                    //var clock_buf: [format.len + 1:0]u8 = undefined;
+                    var clock_buf: [32:0]u8 = undefined;
                     const clock_str = interop.timeAsString(&clock_buf, format) catch {
                         break :draw_big_clock;
                     };
 
                     for (clock_str, 0..) |c, i| {
-                        const clock_cell = bigclock.clockCell(animate, c, buffer.fg, buffer.bg);
+                        const clock_cell = bigclock.clockCell(animate, c, config.bigclock_fg, buffer.bg);
                         bigclock.alphaBlit(buffer.buffer, xo + i * (bigclock.WIDTH + 1), yo, buffer.width, buffer.height, clock_cell);
                     }
                 }
@@ -417,9 +418,9 @@ pub fn main() !void {
                     resolution_changed = false;
                 }
 
-                desktop.draw();
-                login.draw();
-                password.drawMasked(config.asterisk);
+                desktop.draw(config.input_fg);
+                login.draw(config.input_fg);
+                password.drawMasked(config.input_fg, config.asterisk);
 
                 update = animate;
             } else {
